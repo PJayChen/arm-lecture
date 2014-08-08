@@ -7,10 +7,12 @@
 #define locked 1
 #define unlocked 0
 
+#define thread_numbers 14
+
 extern void lock_mutex(void *mutex);
 extern void unlock_mutex(void *mutex);
 
-pthread_t tid[2];
+pthread_t tid[thread_numbers];
 int counter;
 // pthread_mutex_t lock;
 unsigned int mutexlock = unlocked;
@@ -23,7 +25,8 @@ void *doSomeThing(void *arg)
 	counter += 1;
 	printf("\n Job %d started\n", counter);
 
-	for (i = 0; i < (0xFFFFFFFF); i++);
+//	for (i = 0; i < (0xFFFFFFFF); i++);
+	for (i = 0; i < 5; i++);	
 
 	printf("\n Job %d finished\n", counter);
 
@@ -44,15 +47,16 @@ int main(void)
 	}
 #endif
 
-	while (i < 2) {
+	while (i < thread_numbers) {
 		err = pthread_create(&(tid[i]), NULL, &doSomeThing, NULL);
 		if (err != 0)
 			printf("\ncan't create thread :[%s]", strerror(err));
 		i++;
 	}
-
-	pthread_join(tid[0], NULL);
-	pthread_join(tid[1], NULL);
+	i = 0;
+	while(i < thread_numbers){
+		pthread_join(tid[i++], NULL);
+	}
 	// pthread_mutex_destroy(&lock);
 
 	return 0;
